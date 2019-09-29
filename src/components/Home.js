@@ -13,7 +13,10 @@ export default class Home extends Component {
       loading: false,
       modalIsOpen: false,
       tracksInfo: {},
-      error: false
+      error: false,
+      showModal: false,
+      errorModal: 'hide',
+      trackModal: 'show'
     };
   }
 
@@ -61,17 +64,25 @@ export default class Home extends Component {
         `http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=4beaf9466fe996e7ec262761537a778c&mbid=${e}&format=json`
       )
       .then(response => {
-        if (response !== undefined) {
+        console.log(response.data.track, this.state.error);
+        this.setState({
+          tracksInfo: response.data.track,
+          loading: false
+        });
+        if (typeof response.data.track == undefined) {
           this.setState({
-            tracksInfo: response.data.track,
-            loading: false
-          });
-        } else {
-          this.setState({
-            error: true
+            tracksInfo: response.data.message,
+            loading: false,
+            errorModal: 'hide'
           });
         }
-        console.log(this.state.tracksInfo, this.state.error);
+        // else {
+        //   this.setState({
+        //     tracksInfo: response.data.message,
+        //     loading: false,
+        //     modalIsOpen: true
+        //   });
+        // }
       })
       .catch(function(error) {
         console.log(error);
@@ -81,18 +92,21 @@ export default class Home extends Component {
     });
   };
 
+  hideModal = () => {
+    this.setState({
+      trackModal: 'hide'
+    });
+  };
+
   render() {
-    const { tracks, loading, error } = this.state;
-    // console.log(tracks);
     let trackDetails;
     if (
       this.state.modalIsOpen &&
-      loading === false &&
-      error === false &&
+      this.state.loading === false &&
       this.state.tracksInfo !== undefined
     ) {
       trackDetails = (
-        <div id="myModal">
+        <div id="myModal" className={this.state.trackModal}>
           <div className="dialog">
             <div className="modal-content">
               <br />
@@ -107,7 +121,13 @@ export default class Home extends Component {
                 <p className="p1">
                   Album : <span>{this.state.tracksInfo.album.title}</span>
                 </p>
-                <p className="p1">
+                <p
+                  className="p1"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => {
+                    this.openModal1(this.state.tracksInfo.mbid);
+                  }}
+                >
                   Artist : <span>{this.state.tracksInfo.album.artist}</span>
                 </p>
                 <br />
@@ -140,6 +160,7 @@ export default class Home extends Component {
                   type="button"
                   className="btn btn-danger"
                   data-dismiss="modal"
+                  onClick={this.hideModal}
                 >
                   Close
                 </button>
@@ -152,7 +173,7 @@ export default class Home extends Component {
       );
     } else {
       trackDetails = (
-        <div id="myModal">
+        <div id="myModal" className={this.state.errorModal}>
           <div className="dialog">
             <div className="modal-content error">
               <h1>Track Not Found</h1>
@@ -186,7 +207,7 @@ export default class Home extends Component {
           </select>
           <input type="submit" value="Search" onClick={this.getData} />
         </div>
-        {loading ? (
+        {this.state.loading ? (
           <img
             src={load}
             alt="Loading...."
@@ -194,7 +215,7 @@ export default class Home extends Component {
             style={{ textAlign: 'center' }}
           />
         ) : (
-          tracks.map((item, id) => {
+          this.state.tracks.map((item, id) => {
             return (
               <div key={id} id="trackCard">
                 <img
