@@ -16,7 +16,8 @@ export default class Home extends Component {
       error: false,
       showModal: false,
       errorModal: 'hide',
-      trackModal: 'show'
+      trackModal: 'show',
+      artistsdata: []
     };
   }
 
@@ -98,6 +99,19 @@ export default class Home extends Component {
     });
   };
 
+  getArtistsData = (id, name) => {
+    axios
+      .get(
+        `http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=${name}&api_key=4beaf9466fe996e7ec262761537a778c&mbid=${id}&format=json`
+      )
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  };
+
   render() {
     let trackDetails;
     if (
@@ -125,7 +139,10 @@ export default class Home extends Component {
                   className="p1"
                   style={{ cursor: 'pointer' }}
                   onClick={() => {
-                    this.openModal1(this.state.tracksInfo.mbid);
+                    this.getArtistsData(
+                      this.state.tracksInfo.mbid,
+                      this.state.tracksInfo.artist.name
+                    );
                   }}
                 >
                   Artist : <span>{this.state.tracksInfo.album.artist}</span>
