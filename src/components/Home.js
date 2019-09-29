@@ -15,7 +15,7 @@ export default class Home extends Component {
       tracksInfo: {},
       error: false,
       showModal: false,
-      errorModal: 'hide',
+      errorModal: 'show1',
       trackModal: 'show',
       artistsdata: []
     };
@@ -58,25 +58,24 @@ export default class Home extends Component {
 
   openModal = e => {
     this.setState({
-      modalIsOpen: true
+      modalIsOpen: true,
+      trackModal: 'show'
     });
     axios
       .get(
-        `http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=4beaf9466fe996e7ec262761537a778c&mbid=${e}&format=json`
+        `http://ws.audioscrobbler.com/2.0/?method=track.getinfo&api_key=4beaf9466fe996e7ec262761537a778c&mbid=${e}&format=json`
       )
       .then(response => {
         console.log(response.data.track, this.state.error);
+        let data =
+          typeof response.data.track != undefined
+            ? response.data.track
+            : response.data.message;
         this.setState({
-          tracksInfo: response.data.track,
-          loading: false
+          tracksInfo: data,
+          loading: false,
+          errorModal: 'show1'
         });
-        if (typeof response.data.track == undefined) {
-          this.setState({
-            tracksInfo: response.data.message,
-            loading: false,
-            errorModal: 'hide'
-          });
-        }
         // else {
         //   this.setState({
         //     tracksInfo: response.data.message,
@@ -98,11 +97,17 @@ export default class Home extends Component {
       trackModal: 'hide'
     });
   };
+  hideModal1 = () => {
+    this.setState({
+      errorModal: 'hide'
+    });
+  };
 
   getArtistsData = (id, name) => {
+    console.log(id, name);
     axios
       .get(
-        `http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=${name}&api_key=4beaf9466fe996e7ec262761537a778c&mbid=${id}&format=json`
+        `http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${name}&api_key=4beaf9466fe996e7ec262761537a778c&mbid=${id}&format=json`
       )
       .then(response => {
         console.log(response.data);
@@ -188,23 +193,67 @@ export default class Home extends Component {
           </div>
         </div>
       );
-    } else {
-      trackDetails = (
-        <div id="myModal" className={this.state.errorModal}>
-          <div className="dialog">
-            <div className="modal-content error">
-              <h1>Track Not Found</h1>
-              <br />
-              <div className="footer">
-                <button type="button" className="btn btn-danger">
-                  Close
-                </button>
+    }
+    if (this.state.tracksInfo === undefined) {
+      return (
+        <>
+          <div id="header">
+            <h1>Top tracks in {this.state.country}</h1>
+          </div>
+          <div id="countrySelector">
+            <select onChange={this.changeCountry}>
+              <option value="india">India</option>
+              <option value="canada">Canada</option>
+              <option value="france">France</option>
+              <option value="china">China</option>
+              <option value="greece">Greece</option>
+              <option value="japan">Japan</option>
+            </select>
+            <input type="submit" value="Search" onClick={this.getData} />
+          </div>
+          {this.state.loading ? (
+            <img
+              src={load}
+              alt="Loading...."
+              id="loader"
+              style={{ textAlign: 'center' }}
+            />
+          ) : (
+            this.state.tracks.map((item, id) => {
+              return (
+                <div key={id} id="trackCard">
+                  <img
+                    src={item.image[2]['#text']}
+                    alt="TrackImage"
+                    onClick={() => this.openModal(item.mbid)}
+                  />
+                  <h4>{item.name}</h4>
+                  <p>{item.artist.name}</p>
+                </div>
+              );
+            })
+          )}
+
+          <div id="myModal" className={this.state.errorModal}>
+            <div className="dialog">
+              <div className="modal-content error">
+                <h1>Track Not Found</h1>
+                <br />
+                <div className="footer">
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={this.hideModal1}
+                  >
+                    Close
+                  </button>
+                </div>
+                <br />
+                <br />
               </div>
-              <br />
-              <br />
             </div>
           </div>
-        </div>
+        </>
       );
     }
 

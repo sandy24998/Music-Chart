@@ -50,7 +50,7 @@
   top: 15%;
   left: 5%;
   right: 2%;
-  height: 600px;
+  height: 700px;
   width: 90%;
   overflow-y: scroll;
 }
@@ -59,8 +59,8 @@
   position: absolute;
   top: 60%;
   left: 5%;
-  right: 5%;
-  height: 600px;
+  right: 2%;
+  height: 700px;
   width: 90%;
   overflow-y: scroll;
   padding: 200px;
@@ -86,4 +86,14 @@
 }
 .hide {
   display: none;
+}
+.show {
+  display: block;
+}
+
+.hide1 {
+  display: none;
+}
+.show1 {
+  display: block;
 }
