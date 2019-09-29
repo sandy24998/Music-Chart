@@ -1,0 +1,86 @@
+#header {
+  color: coral;
+}
+#header h1 {
+  text-transform: uppercase;
+  text-align: center;
+}
+#countrySelector {
+  margin: 70px;
+  text-align: center;
+}
+#countrySelector select {
+  margin-right: 60px;
+
+  background-color: rgb(240, 235, 235);
+  padding: 5px;
+  width: 200px;
+  border: 2px solid rgb(127, 92, 173);
+  border-radius: 2px;
+}
+#countrySelector input {
+  padding: 8px;
+  width: 100px;
+  color: white;
+  font-weight: 600;
+  background: orange;
+  outline: none;
+  border: none;
+  border-radius: 2px;
+}
+#loader {
+  margin-left: 450px;
+}
+#trackCard {
+  width: 240px;
+  display: inline-block;
+  margin: 60px 100px 20px 100px;
+  text-align: center;
+}
+#trackCard img {
+  cursor: pointer;
+}
+
+#myModal {
+  text-align: center;
+  width: 100%;
+}
+.modal-content {
+  position: absolute;
+  top: 15%;
+  left: 5%;
+  right: 2%;
+  height: 600px;
+  width: 90%;
+  overflow-y: scroll;
+}
+.error {
+  /* display: none; */
+  position: absolute;
+  top: 60%;
+  left: 5%;
+  right: 5%;
+  height: 600px;
+  width: 90%;
+  overflow-y: scroll;
+  padding: 200px;
+}
+.modal-body > p {
+  display: inline-block;
+  margin: 20px 20px;
+}
+.modal-body span {
+  color: orange;
+}
+.tags button {
+  border-radius: 12px;
+  margin: 0 5px;
+}
+.footer span {
+  color: orange;
+}
+.footer button {
+  margin: 20px 0 15px 0;
+  background: red;
+  width: 100px;
+}
