@@ -6,18 +6,21 @@ import load from '../loading.gif';
 export default class Home extends Component {
   constructor(props) {
     super(props);
+
     //Api Key ===  4beaf9466fe996e7ec262761537a778c
+
     this.state = {
       country: 'India',
       tracks: [],
       loading: false,
       modalIsOpen: false,
       tracksInfo: {},
-      error: false,
       showModal: false,
       errorModal: 'show1',
       trackModal: 'show',
-      artistsdata: []
+      artistsdata: [],
+      artistModalVisibility: false,
+      artistModal: 'hide2'
     };
   }
 
@@ -35,7 +38,7 @@ export default class Home extends Component {
       .then(response => {
         this.setState({ tracks: response.data.tracks.track });
         this.setState({ tracks: this.state.tracks.slice(0, 10) });
-        console.log(this.state.tracks);
+        // console.log(this.state.tracks);
       })
       .catch(function(error) {
         console.log(error);
@@ -61,12 +64,15 @@ export default class Home extends Component {
       modalIsOpen: true,
       trackModal: 'show'
     });
+
+    // sample link: http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=Coldplay&api_key=4beaf9466fe996e7ec262761537a778c&format=json
+
     axios
       .get(
         `http://ws.audioscrobbler.com/2.0/?method=track.getinfo&api_key=4beaf9466fe996e7ec262761537a778c&mbid=${e}&format=json`
       )
       .then(response => {
-        console.log(response.data.track, this.state.error);
+        // console.log(response.data.track, this.state.error);
         let data =
           typeof response.data.track != undefined
             ? response.data.track
@@ -76,13 +82,6 @@ export default class Home extends Component {
           loading: false,
           errorModal: 'show1'
         });
-        // else {
-        //   this.setState({
-        //     tracksInfo: response.data.message,
-        //     loading: false,
-        //     modalIsOpen: true
-        //   });
-        // }
       })
       .catch(function(error) {
         console.log(error);
@@ -103,22 +102,114 @@ export default class Home extends Component {
     });
   };
 
-  getArtistsData = (id, name) => {
-    console.log(id, name);
+  hideModal2 = () => {
+    this.setState({
+      artistModal: 'hide2'
+    });
+  };
+
+  getArtistsData = name => {
+    console.log(name);
+    this.setState({
+      loading: true
+    });
     axios
       .get(
-        `http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${name}&api_key=4beaf9466fe996e7ec262761537a778c&mbid=${id}&format=json`
+        `http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=${name}&api_key=4beaf9466fe996e7ec262761537a778c&format=json`
       )
       .then(response => {
         console.log(response.data);
+        this.setState({
+          artistsdata: response.data,
+          artistModalVisibility: true,
+          artistModal: 'show2',
+          trackModal: 'hide'
+        });
       })
       .catch(function(error) {
         console.log(error);
       });
+    this.setState({
+      loading: false
+    });
   };
 
   render() {
-    let trackDetails;
+    let trackDetails, artistsDetails;
+    if (
+      this.state.artistModalVisibility &&
+      this.state.loading === false &&
+      this.state.artistsdata !== undefined
+    ) {
+      artistsDetails = (
+        <div id="myModal" className={this.state.artistModal}>
+          <div className="dialog">
+            <div className="modal-content">
+              <br />
+              <br />
+              <img
+                src={this.state.artistsdata.artist.image[3]['#text']}
+                alt="Song"
+              />
+
+              <h4>{this.state.artistsdata.artist.name}</h4>
+              <div className="modal-body">
+                <p className="p2">
+                  <span>{this.state.artistsdata.artist.stats.listeners}</span>{' '}
+                  listeners
+                </p>
+                <p className="p2">
+                  <span>{this.state.artistsdata.artist.stats.playcount}</span>{' '}
+                  playcounts
+                </p>
+              </div>
+
+              <div className="tags">
+                {this.state.artistsdata.artist.tags.tag.map((item, id) => {
+                  return (
+                    <button type="button" className="btn btn-warning" key={id}>
+                      {item.name}
+                    </button>
+                  );
+                })}
+              </div>
+              <br />
+
+              <div className="footer">
+                <p>
+                  Published On :{' '}
+                  <span>{this.state.artistsdata.artist.bio.published}</span>
+                </p>
+                <p>Related Artists</p>
+                <div className="related-artists">
+                  {this.state.artistsdata.artist.similar.artist.map(
+                    (item, id) => {
+                      return (
+                        <div key={id} id="trackCard">
+                          <img src={item.image[2]['#text']} alt="TrackImage" />
+                          <h4>{item.name}</h4>
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
+                <p>{this.state.artistsdata.artist.bio.links.summary}</p>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  data-dismiss="modal"
+                  onClick={this.hideModal2}
+                >
+                  Close
+                </button>
+              </div>
+              <br />
+              <br />
+            </div>
+          </div>
+        </div>
+      );
+    }
     if (
       this.state.modalIsOpen &&
       this.state.loading === false &&
@@ -144,10 +235,7 @@ export default class Home extends Component {
                   className="p1"
                   style={{ cursor: 'pointer' }}
                   onClick={() => {
-                    this.getArtistsData(
-                      this.state.tracksInfo.mbid,
-                      this.state.tracksInfo.artist.name
-                    );
+                    this.getArtistsData(this.state.tracksInfo.artist.name);
                   }}
                 >
                   Artist : <span>{this.state.tracksInfo.album.artist}</span>
@@ -296,6 +384,7 @@ export default class Home extends Component {
           })
         )}
         <div>{trackDetails}</div>
+        <div>{artistsDetails}</div>
       </>
     );
   }

@@ -55,9 +55,8 @@
   overflow-y: scroll;
 }
 .error {
-  /* display: none; */
   position: absolute;
-  top: 60%;
+  top: 15%;
   left: 5%;
   right: 2%;
   height: 700px;
@@ -97,3 +96,10 @@
 .show1 {
   display: block;
 }
+.hide2 {
+  display: none;
+}
+.show3 {
+  display: block;
+}
+
