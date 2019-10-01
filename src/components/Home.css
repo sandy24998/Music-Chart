@@ -102,4 +102,9 @@
 .show3 {
   display: block;
 }
-
+#trackCard1 {
+  width: 180px;
+  display: inline-block;
+  margin: 60px 100px 20px 100px;
+  text-align: center;
+}

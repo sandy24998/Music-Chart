@@ -109,7 +109,6 @@ export default class Home extends Component {
   };
 
   getArtistsData = name => {
-    console.log(name);
     this.setState({
       loading: true
     });
@@ -118,7 +117,7 @@ export default class Home extends Component {
         `http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=${name}&api_key=4beaf9466fe996e7ec262761537a778c&format=json`
       )
       .then(response => {
-        console.log(response.data);
+        // console.log(response.data);
         this.setState({
           artistsdata: response.data,
           artistModalVisibility: true,
@@ -180,12 +179,12 @@ export default class Home extends Component {
                   Published On :{' '}
                   <span>{this.state.artistsdata.artist.bio.published}</span>
                 </p>
-                <p>Related Artists</p>
+                <p style={{ color: 'orange' }}>Related Artists</p>
                 <div className="related-artists">
                   {this.state.artistsdata.artist.similar.artist.map(
                     (item, id) => {
                       return (
-                        <div key={id} id="trackCard">
+                        <div key={id} id="trackCard1">
                           <img src={item.image[2]['#text']} alt="TrackImage" />
                           <h4>{item.name}</h4>
                         </div>
@@ -193,7 +192,7 @@ export default class Home extends Component {
                     }
                   )}
                 </div>
-                <p>{this.state.artistsdata.artist.bio.links.summary}</p>
+                <p>{this.state.artistsdata.artist.bio.summary}</p>
                 <button
                   type="button"
                   className="btn btn-danger"
